@@ -18,4 +18,5 @@ var (
 	comicInfoRe   = regexp.MustCompile(comicInfoReStr)
 	chapterInfoRe = regexp.MustCompile(chapterInfoReStr)
 	imageURLRe    = regexp.MustCompile(imageURLReStr)
+	comics        = make(map[string]*ComicObj)
 )

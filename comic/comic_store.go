@@ -77,77 +77,107 @@ func ComicStore(comic *Comic) {
 	log.Printf("下载漫画:%s成功", comicTitle)
 }
 
-func ComicObjList() map[string]*ComicObj {
-	m := make(map[string]*ComicObj)
+func InitComics() {
 	files, _ := ioutil.ReadDir(comicRootDir)
 	for _, f := range files {
 		if f.IsDir() {
 			comicName := f.Name()
 			comicPath := path.Join(comicRootDir, comicName)
-			c, ok := m[comicName]
+			comicURL := path.Join(comicName, "list")
+			c, ok := comics[comicName]
 			if ok {
 				c.ComicPath = comicPath
+				c.ComicURL = comicURL
 			} else {
-				m[comicName] = &ComicObj{
-					ComicName: comicName,
-					ComicPath: comicPath,
+				comics[comicName] = &ComicObj{
+					ComicName:  comicName,
+					ComicPath:  comicPath,
+					ComicURL:   comicURL,
+					ChapterMap: make(map[string]*ChapterObj),
 				}
 			}
 		} else {
 			comicName := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
-			comicCoverPath := path.Join(comicRootDir, f.Name())
-			c, ok := m[comicName]
+			comicCoverURL := path.Join(comicRootDir, f.Name())
+			c, ok := comics[comicName]
 			if ok {
-				c.ComicCoverPath = comicCoverPath
+				c.ComicCoverURL = comicCoverURL
 			} else {
-				m[comicName] = &ComicObj{
-					ComicCoverPath: comicCoverPath,
+				comics[comicName] = &ComicObj{
+					ComicCoverURL: comicCoverURL,
+					ChapterMap:    make(map[string]*ChapterObj),
 				}
 			}
 		}
 	}
-	return m
+	initChapters()
 }
 
-func ChapterObjList(comic *ComicObj) map[string]*ChapterObj {
-	m := make(map[string]*ChapterObj)
-	files, _ := ioutil.ReadDir(comic.ComicPath)
-	for _, f := range files {
-		if f.IsDir() {
-			// 取
-			chapterName := f.Name()
-			chapterPath := path.Join(comic.ComicPath, chapterName)
-			c, ok := m[chapterName]
-			if ok {
-				c.ChapterPath = chapterPath
-			} else {
-				m[chapterName] = &ChapterObj{
-					ChapterName: chapterName,
-					ChapterPath: chapterPath,
+func initChapters() {
+	for _, c := range comics {
+		files, _ := ioutil.ReadDir(c.ComicPath)
+		for _, f := range files {
+			if f.IsDir() {
+				chapterName := f.Name()
+				chapterPath := path.Join(c.ComicPath, chapterName)
+				chapterURL := path.Join(c.ComicName, chapterName, "list")
+				ch, ok := c.ChapterMap[chapterName]
+				if ok {
+					ch.ChapterPath = chapterPath
+					ch.ChapterURL = chapterURL
+				} else {
+					c.ChapterMap[chapterName] = &ChapterObj{
+						ChapterName: chapterName,
+						ChapterPath: chapterPath,
+						ChapterURL:  chapterURL,
+					}
 				}
-			}
-		} else {
-			chapterName := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
-			chapterCoverPath := path.Join(comic.ComicPath, f.Name())
-			c, ok := m[chapterName]
-			if ok {
-				c.ChapterCoverPath = chapterCoverPath
 			} else {
-				m[chapterName] = &ChapterObj{
-					ChapterCoverPath: chapterCoverPath,
+				chapterName := strings.TrimSuffix(f.Name(), path.Ext(f.Name()))
+				chapterCoverURL := path.Join(comicRootDir, c.ComicName, f.Name())
+				ch, ok := c.ChapterMap[chapterName]
+				if ok {
+					ch.ChapterCoverURL = chapterCoverURL
+				} else {
+					c.ChapterMap[chapterName] = &ChapterObj{
+						ChapterCoverURL: chapterCoverURL,
+					}
 				}
 			}
 		}
 	}
-	return m
+	initContents()
 }
 
-func ChapterContents(chapter *ChapterObj) (chapterContents []string) {
-	files, _ := ioutil.ReadDir(chapter.ChapterPath)
-	for _, f := range files {
-		if !f.IsDir() {
-			chapterContent := path.Join(chapter.ChapterPath, f.Name())
-			chapterContents = append(chapterContents, chapterContent)
+func initContents() {
+	for _, c := range comics {
+		for _, ch := range c.ChapterMap {
+			files, _ := ioutil.ReadDir(ch.ChapterPath)
+			for _, f := range files {
+				if !f.IsDir() {
+					contentURL := path.Join(ch.ChapterPath, f.Name())
+					ch.Contents = append(ch.Contents, contentURL)
+				}
+			}
+		}
+	}
+}
+
+func ComicObjList() map[string]*ComicObj {
+	return comics
+}
+
+func ChapterObjList(comicName string) (chs []*ChapterObj) {
+	for _, ch := range comics[comicName].ChapterMap {
+		chs = append(chs, ch)
+	}
+	return
+}
+
+func ChapterContents(comicName, chapterName string) (chapterContents []string) {
+	for _, ch := range comics[comicName].ChapterMap {
+		if ch.ChapterName == chapterName {
+			return ch.Contents
 		}
 	}
 	return

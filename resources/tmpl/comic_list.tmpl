@@ -1,6 +1,8 @@
 {{ range $i, $v := . }}
-<div>
-    <img src="{{ $v.ComicCoverPath }}"/>
-</div>
-    <p>{{ $i }}---{{ $v }}</p>
+  <div style="width:80%;height:auto;text-align:center">
+    <a href="{{ $v.ComicURL }}">
+    <img style="max-height: 100%; max-width: 100%;" src="{{ $v.ComicCoverURL }}"/>
+    <div><p>{{ $i }}</p></div>
+    </a>
+  </div>
 {{ end }}

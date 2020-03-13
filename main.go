@@ -84,6 +84,17 @@ func DownloadComic() {
 }
 
 func StartServe() {
+	comic.InitComics()
+	// r := gin.Default()
+	// r.LoadHTMLGlob("resources/tmpl/*")
+	// r.Static("/resources", "resources")
+
+	// r.GET("/list", func(c *gin.Context) {
+	// 	m := comic.ComicObjList()
+	// 	c.HTML(http.StatusOK, "comic_list.tmpl", m)
+	// })
+
+	// r.Run(":80")
 
 	http.Handle("/resources/", http.StripPrefix("/resources", http.FileServer(http.Dir("resources"))))
 	tmpls, err := template.ParseGlob("resources/tmpl/*")
@@ -96,30 +107,36 @@ func StartServe() {
 		tmpls.ExecuteTemplate(w, "comic_list.tmpl", m)
 	})
 	// // 列出所有章节
-	// http.HandleFunc("/:chapter/list", func(w http.ResponseWriter, r *http.Request) {
-	// 	tmpls.ExecuteTemplate(w, "list.tmpl", nil)
-	// 	// fmt.Fprintln(w,"hello")
-	// })
+	http.HandleFunc("/list2", func(w http.ResponseWriter, r *http.Request) {
+		chs := comic.ChapterObjList("漫画a")
+		tmpls.ExecuteTemplate(w, "chapter_list.tmpl", chs)
+	})
 
-	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	fmt.Fprintln(w, "hello world")
-	// })
+	http.HandleFunc("/list3", func(w http.ResponseWriter, r *http.Request) {
+		cns := comic.ChapterContents("哪有学妹这么乖", "第1话")
+		tmpls.ExecuteTemplate(w, "chapter_list.tmpl", cns)
+	})
 
 	http.ListenAndServe(":80", nil)
 }
 
 func main() {
+
 	// DownloadComic()
-	StartServe()
+
 	// cmap := comic.ComicObjList()
 	// for _, c := range cmap {
 	// 	// fmt.Println(c)
-	// 	chmap := comic.ChapterObjList(c)
-	// 	for _, ch := range chmap {
-	// 		cns := comic.ChapterContents(ch)
-	// 		for _, cn := range cns {
-	// 			fmt.Println(cn)
-	// 		}
+	// 	chs := comic.ChapterObjList(c.ComicName)
+	// 	for _, ch := range chs {
+	// 		fmt.Println(ch)
+	// 		// cns := comic.ChapterContents(ch)
+	// 		// for _, cn := range cns {
+	// 		// 	fmt.Println(cn)
+	// 		// }
 	// 	}
 	// }
+
+	StartServe()
+
 }

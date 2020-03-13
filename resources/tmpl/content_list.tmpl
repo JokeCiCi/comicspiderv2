@@ -1,0 +1,8 @@
+{{ range $v := . }}
+   <div style="width:80%;height:auto;text-align:center">
+    <a href="{{ $v.ChapterURL }}">
+    <img style="max-height: 100%; max-width: 100%;" src="{{ $v.ChapterCoverURL }}"/>
+    <div><p>{{ $v.ChapterName }}</p></div>
+    </a>
+  </div>
+{{ end }}

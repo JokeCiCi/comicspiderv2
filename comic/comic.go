@@ -57,21 +57,25 @@ func (i *Image) String() string {
 }
 
 type ComicObj struct {
-	ComicName      string
-	ComicPath      string
-	ComicCoverPath string
+	ComicName     string
+	ComicPath     string
+	ComicURL      string
+	ComicCoverURL string
+	ChapterMap    map[string]*ChapterObj
 }
 
 type ChapterObj struct {
-	ChapterName      string
-	ChapterPath      string
-	ChapterCoverPath string
+	ChapterName     string
+	ChapterPath     string
+	ChapterURL      string
+	ChapterCoverURL string
+	Contents        []string
 }
 
 func (c *ComicObj) String() string {
-	return fmt.Sprintf("ComicName:[%s] ComicPath:[%s] ComicCoverPath:[%s]", c.ComicName, c.ComicPath, c.ComicCoverPath)
+	return fmt.Sprintf("ComicName:[%s] ComicPath:[%s] ComicURL:[%s] ComicCoverURL:[%s]", c.ComicName, c.ComicPath, c.ComicURL, c.ComicCoverURL)
 }
 
 func (c *ChapterObj) String() string {
-	return fmt.Sprintf("ChapterName:[%s] ChapterPath:[%s] ChapterCoverPath:[%s]", c.ChapterName, c.ChapterPath, c.ChapterCoverPath)
+	return fmt.Sprintf("ChapterName:[%s] ChapterPath:[%s] ChapterURL:[%s] ChapterCoverURL:[%s] Contents:[%s]", c.ChapterName, c.ChapterPath, c.ChapterURL, c.ChapterCoverURL, c.Contents)
 }
