@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"sync"
 	"text/template"
 	"time"
@@ -83,7 +84,8 @@ func DownloadComic() {
 	wg.Wait()
 }
 
-func StartServe() {
+func StartServe(wg *sync.WaitGroup) {
+	defer wg.Done()
 	comic.InitComics()
 	// r := gin.Default()
 	// r.LoadHTMLGlob("resources/tmpl/*")
@@ -124,19 +126,9 @@ func main() {
 
 	// DownloadComic()
 
-	// cmap := comic.ComicObjList()
-	// for _, c := range cmap {
-	// 	// fmt.Println(c)
-	// 	chs := comic.ChapterObjList(c.ComicName)
-	// 	for _, ch := range chs {
-	// 		fmt.Println(ch)
-	// 		// cns := comic.ChapterContents(ch)
-	// 		// for _, cn := range cns {
-	// 		// 	fmt.Println(cn)
-	// 		// }
-	// 	}
-	// }
-
-	StartServe()
-
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go StartServe(&wg)
+	exec.Command(`cmd`, `/c`, `start`, `http://127.0.0.1/list`).Start()
+	wg.Wait()
 }
