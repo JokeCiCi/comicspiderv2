@@ -130,5 +130,7 @@ func main() {
 	wg.Add(1)
 	go StartServe(&wg)
 	exec.Command(`cmd`, `/c`, `start`, `http://127.0.0.1/list`).Start()
+	// exec.Command(`xdg-open`, `https://www.jianshu.com`).Start()
+	// exec.Command(`open`, `https://www.jianshu.com`).Start()
 	wg.Wait()
 }
