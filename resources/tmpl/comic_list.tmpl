@@ -1,0 +1,6 @@
+{{ range $i, $v := . }}
+<div>
+    <img src="{{ $v.ComicCoverPath }}"/>
+</div>
+    <p>{{ $i }}---{{ $v }}</p>
+{{ end }}
